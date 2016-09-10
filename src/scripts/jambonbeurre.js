@@ -1,5 +1,13 @@
-define(['jquery'], function ($) {
-    var jambonBeurre = function (options) {
+(function (root, factory) {
+  if(typeof define === "function" && define.amd) {
+    define(["jquery"], factory);
+  } else {
+    root.jambonBeurre = factory(root.$);
+  }
+}(this, function($) {  
+    'use strict';
+
+    var jambonBeurre = function(options) {
 
         this.opts = {
             timeout: 300,
@@ -51,36 +59,64 @@ define(['jquery'], function ($) {
         };
 
         this.menuGesture = function(opts){
-            if(opts.gesture){
-                require(["hammerjs"], function(Hammer){
-                    delete Hammer.defaults.cssProps.userSelect;
-                    $(document).ready(function(){
-                        var hammertime = new Hammer($(opts.content).get(0), opts);
-                        hammertime.on(opts.gestureevent, function(ev) {
-                            if($("body").attr('data-jb-state') == 'open') {
-                                self.hideMenu(opts);
-                            } else {
-                                self.showMenu(opts);
-                            }
-                        });
-                    });
+            self = this;
 
-                });
+            if(opts.scroll){
+                if(typeof define === "function" && define.amd) {
+                    require(["iscroll"], function(){
+                        self.menuScrollStart(opts)
+                    });
+                } else{
+                    self.menuScrollStart(opts);
+                } 
+            } 
+            if(opts.gesture){
+                if(typeof define === "function" && define.amd) {
+                    require(["hammerjs"], function(Hammer){
+                        self.menuGestureStart(opts);
+                    });
+                } else {
+                    self.menuGestureStart(opts);
+                }
 
             }
         };
 
-        this.menuScroll = function(opts){
-            if(opts.scroll){
-                require(["iscroll"], function(){
-                    if (typeof(IScroll) != 'undefined' && $(opts.menu + ">" + opts.scrollcontainer).length > 0 && opts.scroll){                
-                        opts.menu_scroll = new IScroll(".jb-menu", opts);
+        this.menuGestureStart = function(opts){
+            delete Hammer.defaults.cssProps.userSelect;
+            $(document).ready(function(){
+                var hammertime = new Hammer($(opts.content).get(0), opts);
+                hammertime.on(opts.gestureevent, function(ev) {
+                    if($("body").attr('data-jb-state') == 'open') {
+                        self.hideMenu(opts);
+                    } else {
+                        self.showMenu(opts);
                     }
-                    $(window).on("resize", function(e){
-                        opts.menu_scroll.refresh();
-                    }); 
-                }); 
+                });
+            });
+        };
+
+        this.menuScroll = function(opts){
+            self = this;
+
+            if(opts.scroll){
+                if(typeof define === "function" && define.amd) {
+                    require(["iscroll"], function(){
+                        self.menuScrollStart(opts)
+                    });
+                } else{
+                    self.menuScrollStart(opts);
+                } 
             } 
+        };
+
+        this.menuScrollStart = function(opts){
+            if (typeof(IScroll) != 'undefined' && $(opts.menu + ">" + opts.scrollcontainer).length > 0 && opts.scroll){                
+                opts.menu_scroll = new IScroll(".jb-menu", opts);
+            }
+            $(window).on("resize", function(e){
+                opts.menu_scroll.refresh();
+            }); 
         };
 
         this.isTouchDevice = function(){
@@ -190,6 +226,5 @@ define(['jquery'], function ($) {
     };
 
     return jambonBeurre;
- 
-});
+}));
 
