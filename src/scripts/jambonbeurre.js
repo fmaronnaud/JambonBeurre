@@ -64,7 +64,7 @@
             if(opts.scroll){
                 if(typeof define === "function" && define.amd) {
                     require(["iscroll"], function(){
-                        self.menuScrollStart(opts)
+                        self.menuScrollStart(opts);
                     });
                 } else{
                     self.menuScrollStart(opts);
@@ -102,7 +102,7 @@
             if(opts.scroll){
                 if(typeof define === "function" && define.amd) {
                     require(["iscroll"], function(){
-                        self.menuScrollStart(opts)
+                        self.menuScrollStart(opts);
                     });
                 } else{
                     self.menuScrollStart(opts);
